@@ -39,55 +39,83 @@ page_header = """
 </html>
 """
 
+main_form = """
+<form action="/main" method="post">
+    <br>
+    <br>
+<!--Field for adding user_name ...-->
+    <label>Please enter Username:
+        <input type="text" name = "username"/>
+    </label>
+
+<!-- Field for adding password ...-->
+    <br>
+    <br>
+    <label>Please enter Password:
+        <input type="password" name = "password"/>
+    </label>
+    <p><i>Password must be 8 - 20 characters,
+        contain only digits and letters and
+        is case-sensitive</i>
+    </p>
+
+<!-- Field for verifying password ...-->
+    <label>Please verify Password:
+        <input type="password" name="verify"
+    </label>
+
+<!-- Field for entering email address ...-->
+    <br>
+    <br>
+    <label>Please enter Email:
+        <input type="text" style="width:50em;" name="email"
+    </label>
+    <p>
+        <i>Note: Email address is optional !</i>
+    </p>
+    <br>
+    <center>
+        <input type="submit" value="Submit"/>
+    </center>
+</form>
+"""
+
 class MainHandler(webapp2.RequestHandler):
     """ Handles root '/' requests """
     def get(self):
+        root_form = main_form
 
-        # Field for adding user_name ...
-        main_form = """
-        <form action="/main" method="post">
-            <br>
-            <br>
-        <!--Field for adding user_name ...-->
-            <label>Please enter Username:
-                <input type="text" name = "username"/>
-            </label>
+        # if we have an error, make a <p> to display it
+        error = self.request.get("error")
+        error_element = "<p class='error'>" + error + \
+        "</p>" if error else ""
 
-        <!-- Field for adding password ...-->
-            <br>
-            <br>
-            <label>Please enter Password:
-                <input type="password" name = "password"/>
-            </label>
-            <p><i>Password must be 8 - 20 characters,
-                contain only digits and letters and
-                is case-sensitive</i>
-            </p>
+        content = page_header + root_form + \
+        "in MainHandler" + error_element
+        self.response.write(content)
 
-        <!-- Field for verifying password ...-->
-            <label>Please verify Password:
-                <input type="password" name="verify"
-            </label>
+class MainProcess(webapp2.RequestHandler):
+    """ Handles '/main' requests """
 
-        <!-- Field for entering email address ...-->
-            <br>
-            <br>
-            <label>Please enter Email:
-                <input type="text" style="width:50em;" name="email"
-            </label>
-            <p>
-                <i>Note: Email address is optional !</i>
-            </p>
-            <br>
-            <center>
-                <input type="submit" value="Submit"/>
-            </center>
-        </form>
-        """
+    def post(self):
+        error_msg = ""
+        # Check to see if user input username ...
+        user_name = self.request.get("username")
 
-        content = page_header + main_form
+        # Username cannot be blank ...
+        if user_name == " ":
+            error_msg = 'User name cannot be blank; please reenter.'
+
+        if error_msg != "":
+            self.redirect('/?error=' + error_msg)
+
+        content = page_header + main_form + \
+        "<p>In MainProcess</p>" + \
+        "<p>username=*" + user_name + "*</p>"
         self.response.write(content)
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/main', MainProcess)
+
 ], debug=True)
