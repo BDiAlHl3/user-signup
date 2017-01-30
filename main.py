@@ -23,11 +23,13 @@ page_header = """
 <html>
 <head>
     <title>User Signup</title>
-    <style type="text/css">
-        .error {
-            color: red;
+    <style>
+        label {
+            margin-left: 200px;
         }
-
+        p {
+            margin-left: 200px;
+        }
     </style>
 </head>
 <body>
@@ -38,8 +40,69 @@ page_header = """
 """
 
 class MainHandler(webapp2.RequestHandler):
+    """ Handles root '/' requests """
     def get(self):
-        content = page_header
+
+        # Field for adding user_name ...
+        username_form = """
+        <form action="/user" method="post">
+            <br>
+            <br>
+            <label>Please enter Username:
+                <input type="text" name = "user-name"/>
+            </label>
+            <input type="submit" value="User Name"/>
+        </form>
+        """
+
+        # Field for adding password ...
+        # Use <input> name for pw=self.request.get("password")
+        # within post method for password ...
+        pw_form = """
+        <form action="/pw" method="post">
+            <br>
+            <br>
+            <label>Please enter Password:
+                <input type="text" name = "password"/>
+            </label>
+            <input type="submit" value="Password"/>
+            <p><i>Password must be 8 - 20 characters,
+                contain only digits and letters and
+                is case-sensitive</i>
+            </p>
+        </form>
+        """
+
+        # Field for verifying password ...
+        pw_verify_form = """
+        <form action="/pw_verify" method="post">
+            <br>
+            <br>
+            <label>Please verify Password:
+                <input type="text" name="pw-verify"
+            </label>
+            <input type="submit" value="Verify Password"/>
+        </form>
+        """
+
+        # Field for entering email address ...
+        email_form = """
+        <form action="/email" method="post">
+            <br>
+            <br>
+            <label>Please enter Email:
+                <input type="text" style="width:50em;" name="email"
+            </label>
+            <input type="submit" value="Email Address"/>
+            <p>
+                <i>Note: Email address is optional !</i>
+            </p>
+        </form>
+        """
+
+
+        content = page_header + username_form +pw_form \
+            + pw_verify_form + email_form
         self.response.write(content)
 
 app = webapp2.WSGIApplication([
