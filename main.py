@@ -44,22 +44,16 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
 
         # Field for adding user_name ...
-        username_form = """
-        <form action="/user" method="post">
+        main_form = """
+        <form action="/main" method="post">
             <br>
             <br>
+        <!--Field for adding user_name ...-->
             <label>Please enter Username:
                 <input type="text" name = "username"/>
             </label>
 
-        </form>
-        """
-
-        # Field for adding password ...
-        # Use <input> name for pw=self.request.get("password")
-        # within post method for password ...
-        pw_form = """
-        <form action="/pw" method="post">
+        <!-- Field for adding password ...-->
             <br>
             <br>
             <label>Please enter Password:
@@ -69,29 +63,18 @@ class MainHandler(webapp2.RequestHandler):
                 contain only digits and letters and
                 is case-sensitive</i>
             </p>
-        </form>
-        """
 
-        # Field for verifying password ...
-        pw_verify_form = """
-        <form action="/pw_verify" method="post">
-            <br>
-            <br>
+        <!-- Field for verifying password ...-->
             <label>Please verify Password:
                 <input type="password" name="verify"
             </label>
-        </form>
-        """
 
-        # Field for entering email address ...
-        email_form = """
-        <form action="/email" method="post">
+        <!-- Field for entering email address ...-->
             <br>
             <br>
             <label>Please enter Email:
                 <input type="text" style="width:50em;" name="email"
             </label>
-
             <p>
                 <i>Note: Email address is optional !</i>
             </p>
@@ -102,9 +85,7 @@ class MainHandler(webapp2.RequestHandler):
         </form>
         """
 
-
-        content = page_header + username_form +pw_form \
-            + pw_verify_form + email_form
+        content = page_header + main_form
         self.response.write(content)
 
 app = webapp2.WSGIApplication([
