@@ -49,9 +49,9 @@ class MainHandler(webapp2.RequestHandler):
             <br>
             <br>
             <label>Please enter Username:
-                <input type="text" name = "user-name"/>
+                <input type="text" name = "username"/>
             </label>
-            <input type="submit" value="User Name"/>
+
         </form>
         """
 
@@ -63,9 +63,8 @@ class MainHandler(webapp2.RequestHandler):
             <br>
             <br>
             <label>Please enter Password:
-                <input type="text" name = "password"/>
+                <input type="password" name = "password"/>
             </label>
-            <input type="submit" value="Password"/>
             <p><i>Password must be 8 - 20 characters,
                 contain only digits and letters and
                 is case-sensitive</i>
@@ -79,9 +78,8 @@ class MainHandler(webapp2.RequestHandler):
             <br>
             <br>
             <label>Please verify Password:
-                <input type="text" name="pw-verify"
+                <input type="password" name="verify"
             </label>
-            <input type="submit" value="Verify Password"/>
         </form>
         """
 
@@ -93,10 +91,14 @@ class MainHandler(webapp2.RequestHandler):
             <label>Please enter Email:
                 <input type="text" style="width:50em;" name="email"
             </label>
-            <input type="submit" value="Email Address"/>
+
             <p>
                 <i>Note: Email address is optional !</i>
             </p>
+            <br>
+            <center>
+                <input type="submit" value="Submit"/>
+            </center>
         </form>
         """
 
