@@ -16,6 +16,11 @@
 #
 import webapp2
 import cgi
+import re
+
+user_re = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+pw_re = re.compile(r"^.{3,20}$")
+email_re = re.compile(r"^[\S]+@[\S]+.[\S]+$")
 
 # html boilerplate for the top of every page ...
 page_header = """
@@ -96,9 +101,13 @@ email_form = """
 </form>
 """
 
+def escape_html(s):
+    return cgi.escape(s)
+
 def ValidName(name):
     if " " not in name:
-        return name
+        return user_re.match(name)
+
 
 #def WriteForm(self,error=""):
 #    content=page_header + name_form + pw_form + \
@@ -116,10 +125,10 @@ class MainHandler(webapp2.RequestHandler):
         content=page_header + name_form + pw_form + \
         pw_verify_form + email_form
         self.response.out.write(content % {"error":error,
-                                           "username":username,
-                                           "password":password,
-                                           "verify":verify,
-                                           "email":email})
+                                           "username":escape_html(username),
+                                           "password":escape_html(password),
+                                           "verify":escape_html(verify),
+                                           "email":escape_html(email)})
 
     def get(self):
         #username=""
@@ -151,8 +160,13 @@ class MainHandler(webapp2.RequestHandler):
         if not name:
             self.WriteForm("Invalid User Name",user_name)
         else:
-            self.response.out.write("User Name is Valid!")
+            self.redirect("/welcome")
+
+class WelcomeHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write("User Name is Valid!")
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/welcome', WelcomeHandler)
 ], debug=True)
