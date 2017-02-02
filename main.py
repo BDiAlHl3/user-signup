@@ -82,6 +82,7 @@ pw_verify_form = """
         <label>Please verify Password:
             <input type="password" name="verify" value="%(verify)s"/>
         </label>
+        <label style="color:red">  %(err_3)s</label>
     </div>
 <form/>
 """
@@ -95,6 +96,7 @@ email_form = """
         <label>Please enter Email:
             <input type="text" style="width:50em;" name="email" value="%(email)s"/>
         </label>
+        <label style="color:red">  %(err_4)s</label>
         <p>
             <i>Note: Email address is optional !</i>
         </p>
@@ -104,6 +106,11 @@ email_form = """
         <input type="submit" value="Submit"/>
     </center>
 </form>
+"""
+
+welcome_form = """
+<form action="/welcome" method="post"</form>
+    <label>Welcome, %(welcomename)s</label>
 """
 
 # ^ and & are beginning and end of the test string ...
@@ -122,6 +129,14 @@ def ValidPassWord(password):
     if " " not in password:
         return pw_re.match(password)
 
+def ValidVerify(password,pw_verify):
+    if password == pw_verify:
+        return True
+
+def ValidEmail(email):
+    if " " not in email:
+        return email_re.match(email)
+
 class MainHandler(webapp2.RequestHandler):
     """ Handles root '/' requests """
     # The default for self.response.headers is html,
@@ -129,18 +144,22 @@ class MainHandler(webapp2.RequestHandler):
     # self.response.headers['Content-Type'#] = 'text/plain'
 
     # get in mainhandler just displays the form ...
-    def WriteForm(self,username="",n_err="",
+    def WriteForm(self,username="",un_err="",
                        password="",pw_err="",
-                       verify="",email=""):
+                       verify="",pwv_err="",
+                       email="",em_err=""):
         content=page_header + name_form + pw_form + \
         pw_verify_form + email_form
         #self.response.out.write(content % {"error":error,
         self.response.out.write(content % {"username":escape_html(username),
-                                           "err_1":n_err,
+                                           "err_1":un_err,
                                            "password":escape_html(password),
                                            "err_2":pw_err,
                                            "verify":escape_html(verify),
-                                           "email":escape_html(email)})
+                                           "err_3":pwv_err,
+                                           "email":escape_html(email),
+                                           "err_4":em_err
+                                           })
 
     def get(self):
         self.WriteForm()
@@ -150,10 +169,10 @@ class MainHandler(webapp2.RequestHandler):
         user_name = self.request.get('username')
         user_pw = self.request.get('password')
         user_verify = self.request.get('verify')
-        user_verify = self.request.get('email')
+        user_email = self.request.get('email')
 
         # Initialize Error messages ...
-        n_err = ""
+        un_err = ""
         pw_err = ""
         pwv_err = ""
         email_err = ""
@@ -161,25 +180,41 @@ class MainHandler(webapp2.RequestHandler):
         # Save validated input ...
         name = ValidName(user_name)
         password = ValidPassWord(user_pw)
+        email = ValidEmail(user_email)
 
         err_flag = False
         # Check for error messages ...
         if not name:
-            n_err="Invalid User Name"
+            un_err="Invalid User Name"
             err_flag = True
         if not password:
             pw_err = "Invalid Password"
+            user_pw=""
+            err_flag = True
+
+        if not ValidVerify(user_pw,user_verify):
+            pwv_err = "This field must match the password you just entered!"
+            err_flag = True
+
+        if not email:
+            em_err = "Invalid Email"
             err_flag = True
 
         if err_flag:
-            #self.WriteForm(user_name,n_err)
-            self.WriteForm(user_name,n_err,user_pw,pw_err)
+            #self.WriteForm(user_name,un_err)
+            self.WriteForm(user_name,un_err,user_pw,pw_err,
+                           user_verify,pwv_err,user_email,em_err
+                           )
         else:
-            self.redirect("/welcome")
+            self.redirect("/welcome?welcomename="+user_name)
 
 class WelcomeHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write("User Name is Valid!")
+        def get(self):
+            out_content=page_header+welcome_form
+
+        # def post(self):
+            user_name=self.request.get('welcomename')
+            self.response.out.write(out_content % {"welcomename":user_name}+"!")
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
