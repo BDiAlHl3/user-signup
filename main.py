@@ -180,7 +180,12 @@ class MainHandler(webapp2.RequestHandler):
         # Save validated input ...
         name = ValidName(user_name)
         password = ValidPassWord(user_pw)
-        email = ValidEmail(user_email)
+        #email = ValidEmail(user_email)
+        #if user_email and not user_name.isspace():
+        email=""
+        em_err=""
+        if user_email:
+            email = ValidEmail(user_email)
 
         err_flag = False
         # Check for error messages ...
@@ -196,7 +201,7 @@ class MainHandler(webapp2.RequestHandler):
             pwv_err = "This field must match the password you just entered!"
             err_flag = True
 
-        if not email:
+        if not email and user_email:
             em_err = "Invalid Email"
             err_flag = True
 
